@@ -1,0 +1,41 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: ubuntu:xenial
+    working_directory: ~/dockerfiles
+    environment:
+      DOCKER_VERSION: "17.03.0-ce"
+      SUBDIRS: "zoneminder"
+    steps:
+    - checkout
+    - setup_remote_docker
+    - run:
+        name: Install Docker client
+        command: |
+          apt-get -qq update
+          apt-get install -y curl ca-certificates
+          curl -sSL -o "/tmp/docker-${DOCKER_VERSION}.tgz" "https://get.docker.com/builds/Linux/x86_64/docker-${DOCKER_VERSION}.tgz"
+          tar -xz -C /tmp -f "/tmp/docker-${DOCKER_VERSION}.tgz"
+          mv /tmp/docker/* /usr/bin
+    - run:
+        name: Build images
+        command: |
+          for dir in *; do
+            if [[ -f ${dir}/Dockerfile ]]; then
+              image="ivan4th/${dir}"
+              echo "*** Building ${image} ***"
+              docker build -t "ivan4th/${dir}" "${dir}"
+            fi
+          done
+    - run:
+        name: Push images
+        command: |
+          docker login -u "${DOCKER_USER}" -p "${DOCKER_PASS}"
+          for dir in ${SUBDIRS}; do
+            if [[ -f ${dir}/Dockerfile ]]; then
+              image="ivan4th/${dir}"
+              echo "*** Pushing ${image} ***"
+              docker push "ivan4th/${dir}"
+            fi
+          done
