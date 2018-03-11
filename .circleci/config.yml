@@ -14,28 +14,30 @@ jobs:
         name: Install Docker client
         command: |
           apt-get -qq update
-          apt-get install -y curl ca-certificates
+          apt-get install -y curl ca-certificates git
           curl -sSL -o "/tmp/docker-${DOCKER_VERSION}.tgz" "https://get.docker.com/builds/Linux/x86_64/docker-${DOCKER_VERSION}.tgz"
           tar -xz -C /tmp -f "/tmp/docker-${DOCKER_VERSION}.tgz"
           mv /tmp/docker/* /usr/bin
     - run:
         name: Build images
         command: |
+          tag=$(TZ=UTC git show --quiet --date='format-local:%Y%m%d%H%M%S' --format="%cd-%h")
           for dir in *; do
             if [[ -f ${dir}/Dockerfile ]]; then
-              image="ivan4th/${dir}"
+              image="ivan4th/${dir}:${tag}"
               echo "*** Building ${image} ***"
-              docker build -t "ivan4th/${dir}" "${dir}"
+              docker build -t "${image}" "${dir}"
             fi
           done
     - run:
         name: Push images
         command: |
+          tag=$(TZ=UTC git show --quiet --date='format-local:%Y%m%d%H%M%S' --format="%cd-%h")
           docker login -u "${DOCKER_USER}" -p "${DOCKER_PASS}"
           for dir in ${SUBDIRS}; do
             if [[ -f ${dir}/Dockerfile ]]; then
-              image="ivan4th/${dir}"
+              image="ivan4th/${dir}:${tag}"
               echo "*** Pushing ${image} ***"
-              docker push "ivan4th/${dir}"
+              docker push "${image}"
             fi
           done
