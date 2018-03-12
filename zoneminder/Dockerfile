@@ -35,6 +35,9 @@ RUN chmod 755 /usr/local/bin/entrypoint.sh
 RUN sed -i 's/SSLRequireSSL/#SSLRequireSSL/g' /etc/httpd/conf.d/*.conf && \
     sed -i 's/\(RewriteRule.*https.*SERVER_NAME.*\|RewriteCond.*HTTPS.*on\)/# \1/' -i /etc/httpd/conf.d/zoneminder.conf
 
+# FIXME: the startup script fails w/o this
+RUN ln -s /usr/bin/mysqld_safe /usr/bin/mysqld
+
 # This is run each time the container is started
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 
