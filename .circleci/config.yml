@@ -20,6 +20,7 @@ jobs:
           mv /tmp/docker/* /usr/bin
     - run:
         name: Build images
+        no_output_timeout: 35m
         command: |
           tag=$(TZ=UTC git show --quiet --date='format-local:%Y%m%d%H%M%S' --format="%cd-%h")
           for dir in *; do
