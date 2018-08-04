@@ -6,7 +6,7 @@ jobs:
     working_directory: ~/dockerfiles
     environment:
       DOCKER_VERSION: "17.03.0-ce"
-      SUBDIRS: "zoneminder debian-arm"
+      SUBDIRS: "zoneminder debian-arm alpine-bash-git"
     steps:
     - checkout
     - setup_remote_docker
