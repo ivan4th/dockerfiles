@@ -6,7 +6,7 @@ jobs:
     working_directory: ~/dockerfiles
     environment:
       DOCKER_VERSION: "17.03.0-ce"
-      SUBDIRS: "zerotier zoneminder debian-arm alpine-bash-git"
+      SUBDIRS: "zerotier debian-arm alpine-bash-git kube-deploy jenkins-job-builder"
     steps:
     - checkout
     - setup_remote_docker
